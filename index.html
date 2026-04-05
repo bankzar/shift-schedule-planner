@@ -1,0 +1,1657 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ตารางการทำงาน</title>
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-primary: #fafafa;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f5f5f5;
+  --text-primary: #2d2d2d;
+  --text-secondary: #616161;
+  --accent-yellow: #FFC107;
+  --accent-yellow-dark: #FFA000;
+  --accent-yellow-light: #FFD54F;
+  --border-color: #e0e0e0;
+  --shadow: rgba(0, 0, 0, 0.08);
+  --off-day-bg: #ffebee;
+  --off-day-text: #c62828;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a1a;
+  --bg-secondary: #2d2d2d;
+  --bg-tertiary: #242424;
+  --text-primary: #e0e0e0;
+  --text-secondary: #9e9e9e;
+  --border-color: #424242;
+  --shadow: rgba(0, 0, 0, 0.3);
+  --off-day-bg: #3d2626;
+  --off-day-text: #ff8a80;
+}
+
+body {
+  font-family: 'Segoe UI', 'Sarabun', Arial, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.3s, color 0.3s;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 40px 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.header h1 {
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+.header h1 span {
+  color: var(--accent-yellow);
+  font-weight: 400;
+}
+
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toggle-label {
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.switch {
+  position: relative;
+  width: 50px;
+  height: 26px;
+  background: var(--border-color);
+  border-radius: 13px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.switch:hover {
+  background: var(--accent-yellow-light);
+}
+
+.switch-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  background: var(--bg-secondary);
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px var(--shadow);
+}
+
+.switch.active {
+  background: var(--accent-yellow);
+}
+
+.switch.active .switch-slider {
+  transform: translateX(24px);
+}
+
+.card {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+.section-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-primary);
+  margin-bottom: 16px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--accent-yellow);
+  display: block;
+  width: 100%;
+}
+
+.config-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.shift-selector {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.shift-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  background: var(--bg-tertiary);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.shift-checkbox:hover {
+  background: var(--accent-yellow-light);
+  border-color: var(--accent-yellow);
+}
+
+.shift-checkbox input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent-yellow);
+  pointer-events: none;
+}
+
+.shift-checkbox.checked {
+  background: var(--accent-yellow-light);
+  border-color: var(--accent-yellow);
+}
+
+.shift-checkbox label {
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  background: none;
+  border: none;
+  pointer-events: none;
+}
+
+select {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 15px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  transition: all 0.3s;
+  outline: none;
+  cursor: pointer;
+}
+
+select:focus {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+.shift-config-container {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 30px;
+  margin-top: 20px;
+  align-items: start;
+  max-height: 500px;
+}
+
+@media (min-width: 1400px) {
+  .shift-config-container {
+    max-height: 400px;
+  }
+}
+
+.chart-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+#shiftChart {
+  max-width: 300px;
+  max-height: 300px;
+}
+
+.chart-total {
+  text-align: center;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+}
+
+.chart-total .total-percent {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent-yellow);
+  display: block;
+}
+
+.chart-total .total-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.shift-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+@media (min-width: 1400px) {
+  .shift-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.input-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-top: 20px;
+}
+
+@media (min-width: 1200px) {
+  .input-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 1600px) {
+  .input-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.input-group label {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  background: var(--accent-yellow);
+  padding: 6px 10px;
+  border-radius: 6px;
+  display: inline-block;
+  margin-bottom: 8px;
+}
+
+.dual-input-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.dual-input {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.dual-input span {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-primary);
+  background: var(--bg-tertiary);
+  padding: 4px 8px;
+  border-radius: 4px;
+}
+
+input[type="number"] {
+  padding: 10px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 15px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  transition: all 0.3s;
+  outline: none;
+}
+
+input[type="number"]:focus {
+  border-color: var(--accent-yellow);
+  box-shadow: 0 0 0 3px rgba(255, 193, 7, 0.1);
+}
+
+.button-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+button.primary {
+  background: var(--accent-yellow);
+  color: #2d2d2d;
+}
+
+button.primary:hover {
+  background: var(--accent-yellow-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+}
+
+button.secondary {
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
+}
+
+button.secondary:hover {
+  background: var(--border-color);
+}
+
+.summary {
+  background: linear-gradient(135deg, var(--accent-yellow-light) 0%, var(--accent-yellow) 100%);
+  padding: 24px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  color: #2d2d2d;
+}
+
+.summary h3 {
+  font-size: 18px;
+  font-weight: 500;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-tabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.tab-button {
+  background: rgba(255, 255, 255, 0.7);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.3s;
+  color: #2d2d2d;
+}
+
+.tab-button:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.tab-button.active {
+  background: white;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.summary-section {
+  margin-bottom: 20px;
+}
+
+.summary-section:last-child {
+  margin-bottom: 0;
+}
+
+.summary-section h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  opacity: 0.8;
+}
+
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+}
+
+.summary-item {
+  background: rgba(255, 255, 255, 0.9);
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+.summary-item strong {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 4px;
+  color: #2d2d2d;
+}
+
+.error {
+  background: #ffebee;
+  color: #c62828;
+  padding: 16px 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  border-left: 4px solid #c62828;
+  font-size: 14px;
+}
+
+[data-theme="dark"] .error {
+  background: #3d2626;
+  color: #ff8a80;
+}
+
+.table-container {
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+thead {
+  background: var(--bg-tertiary);
+  border-bottom: 2px solid var(--accent-yellow);
+}
+
+th {
+  padding: 16px 12px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+td {
+  padding: 14px 12px;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+tbody tr:hover {
+  background: var(--bg-tertiary);
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.employee-cell {
+  font-weight: 700;
+  color: var(--text-primary);
+  text-align: left;
+  font-size: 15px;
+}
+
+.shift-cell {
+  color: var(--text-primary);
+  font-family: 'Courier New', monospace;
+  font-weight: 600;
+}
+
+.off-day {
+  background: var(--off-day-bg) !important;
+  color: var(--off-day-text) !important;
+  font-weight: 600;
+}
+
+@media (max-width: 1024px) {
+  .shift-config-container {
+    grid-template-columns: 1fr;
+  }
+  
+  .input-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .shift-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  
+  .input-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .shift-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .dual-input-row {
+    flex-direction: column;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  button {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  table {
+    font-size: 12px;
+  }
+  
+  th, td {
+    padding: 10px 6px;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card, .summary, .table-container {
+  animation: fadeIn 0.5s ease;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1><span>Shift</span> Schedule</h1>
+    <div class="theme-toggle">
+      <span class="toggle-label">☀️ Light</span>
+      <div class="switch" onclick="toggleTheme()">
+        <div class="switch-slider"></div>
+      </div>
+      <span class="toggle-label">🌙 Dark</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="input-group" style="max-width: 300px; margin-bottom: 24px;">
+      <label for="num_employees">👥 จำนวนพนักงานทั้งหมด</label>
+      <input type="number" id="num_employees" min="1" max="100" value="70" onchange="recalculateAll()">
+    </div>
+
+    <div class="section-title">⚙️ การตั้งค่ากะ</div>
+    <div class="config-row">
+      <div class="input-group">
+        <label>⏱️ ชั่วโมงทำงานต่อวัน</label>
+        <select id="work_hours" onchange="updateShiftDisplay()">
+          <option value="8">8 ชั่วโมง</option>
+          <option value="9" selected>9 ชั่วโมง</option>
+          <option value="10">10 ชั่วโมง</option>
+        </select>
+      </div>
+      
+      <div class="input-group">
+        <label>🏖️ จำนวนวันหยุดต่อสัปดาห์</label>
+        <select id="days_off" onchange="updateDaysOffInfo()">
+          <option value="1">1 วัน</option>
+          <option value="2" selected>2 วัน</option>
+          <option value="3">3 วัน</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="input-group" style="margin-bottom: 24px;">
+      <label>✅ เลือกกะที่ต้องการใช้งาน</label>
+      <div class="shift-selector">
+        <div class="shift-checkbox" onclick="toggleShift(1)">
+          <input type="checkbox" id="shift_enable_1" checked onchange="handleShiftToggle(1)">
+          <label for="shift_enable_1">กะ 06:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(2)">
+          <input type="checkbox" id="shift_enable_2" checked onchange="handleShiftToggle(2)">
+          <label for="shift_enable_2">กะ 07:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(3)">
+          <input type="checkbox" id="shift_enable_3" checked onchange="handleShiftToggle(3)">
+          <label for="shift_enable_3">กะ 08:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(4)">
+          <input type="checkbox" id="shift_enable_4" checked onchange="handleShiftToggle(4)">
+          <label for="shift_enable_4">กะ 09:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(5)">
+          <input type="checkbox" id="shift_enable_5" checked onchange="handleShiftToggle(5)">
+          <label for="shift_enable_5">กะ 10:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(6)">
+          <input type="checkbox" id="shift_enable_6" checked onchange="handleShiftToggle(6)">
+          <label for="shift_enable_6">กะ 11:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(7)">
+          <input type="checkbox" id="shift_enable_7" checked onchange="handleShiftToggle(7)">
+          <label for="shift_enable_7">กะ 12:00</label>
+        </div>
+        <div class="shift-checkbox" onclick="toggleShift(8)">
+          <input type="checkbox" id="shift_enable_8" checked onchange="handleShiftToggle(8)">
+          <label for="shift_enable_8">กะ 13:00</label>
+        </div>
+      </div>
+    </div>
+    
+    <div class="section-title">📅 อัตราส่วนพนักงานแต่ละวัน</div>
+    <div class="input-grid">
+      <div class="input-group">
+        <label>📅 จันทร์</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_mon" min="0" value="56" onchange="updateFromPeople('mon')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_mon" min="0" max="100" value="80" onchange="updateFromPercent('mon')">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label>📅 อังคาร</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_tue" min="0" value="70" onchange="updateFromPeople('tue')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_tue" min="0" max="100" value="100" onchange="updateFromPercent('tue')">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label>📅 พุธ</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_wed" min="0" value="70" onchange="updateFromPeople('wed')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_wed" min="0" max="100" value="100" onchange="updateFromPercent('wed')">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label>📅 พฤหัสบดี</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_thu" min="0" value="70" onchange="updateFromPeople('thu')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_thu" min="0" max="100" value="100" onchange="updateFromPercent('thu')">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label>📅 ศุกร์</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_fri" min="0" value="70" onchange="updateFromPeople('fri')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_fri" min="0" max="100" value="100" onchange="updateFromPercent('fri')">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label>📅 เสาร์</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_sat" min="0" value="21" onchange="updateFromPeople('sat')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_sat" min="0" max="100" value="30" onchange="updateFromPercent('sat')">
+          </div>
+        </div>
+      </div>
+      
+      <div class="input-group">
+        <label>📅 อาทิตย์</label>
+        <div class="dual-input-row">
+          <div class="dual-input">
+            <span>จำนวนคน</span>
+            <input type="number" id="people_sun" min="0" value="21" onchange="updateFromPeople('sun')">
+          </div>
+          <div class="dual-input">
+            <span>เปอร์เซ็นต์ (%)</span>
+            <input type="number" id="ratio_sun" min="0" max="100" value="30" onchange="updateFromPercent('sun')">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-title" style="margin-top: 32px;">⏰ อัตราส่วนพนักงานแต่ละกะ</div>
+    <div class="shift-config-container">
+      <div class="chart-container">
+        <canvas id="shiftChart"></canvas>
+        <div class="chart-total">
+          <span class="total-percent" id="totalPercent">100%</span>
+          <span class="total-label">รวมทั้งหมด</span>
+        </div>
+      </div>
+      <div class="shift-grid">
+        <div class="input-group" data-shift="1">
+          <label>⏰ 06:00-15:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_1" min="0" value="7" onchange="updateShiftFromPeople(1)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_1" min="0" max="100" value="10" onchange="updateShiftFromPercent(1)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="2">
+          <label>⏰ 07:00-16:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_2" min="0" value="11" onchange="updateShiftFromPeople(2)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_2" min="0" max="100" value="15" onchange="updateShiftFromPercent(2)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="3">
+          <label>⏰ 08:00-17:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_3" min="0" value="18" onchange="updateShiftFromPeople(3)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_3" min="0" max="100" value="25" onchange="updateShiftFromPercent(3)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="4">
+          <label>⏰ 09:00-18:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_4" min="0" value="18" onchange="updateShiftFromPeople(4)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_4" min="0" max="100" value="25" onchange="updateShiftFromPercent(4)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="5">
+          <label>⏰ 10:00-19:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_5" min="0" value="7" onchange="updateShiftFromPeople(5)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_5" min="0" max="100" value="10" onchange="updateShiftFromPercent(5)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="6">
+          <label>⏰ 11:00-20:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_6" min="0" value="4" onchange="updateShiftFromPeople(6)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_6" min="0" max="100" value="5" onchange="updateShiftFromPercent(6)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="7">
+          <label>⏰ 12:00-21:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_7" min="0" value="4" onchange="updateShiftFromPeople(7)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_7" min="0" max="100" value="5" onchange="updateShiftFromPercent(7)">
+            </div>
+          </div>
+        </div>
+        
+        <div class="input-group" data-shift="8">
+          <label>⏰ 13:00-22:00</label>
+          <div class="dual-input-row">
+            <div class="dual-input">
+              <span>จำนวนคน</span>
+              <input type="number" id="shift_people_8" min="0" value="4" onchange="updateShiftFromPeople(8)">
+            </div>
+            <div class="dual-input">
+              <span>เปอร์เซ็นต์ (%)</span>
+              <input type="number" id="shift_8" min="0" max="100" value="5" onchange="updateShiftFromPercent(8)">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="button-group">
+      <button class="primary" onclick="generateSchedule()">🔄 สร้างตาราง</button>
+      <button class="primary" onclick="exportToExcel()">📥 Export Excel</button>
+      <button class="secondary" onclick="resetInputs()">↺ รีเซ็ต</button>
+      <button class="secondary" onclick="saveSettings()">💾 บันทึกการตั้งค่า</button>
+      <button class="secondary" onclick="loadSettings()">📂 โหลดการตั้งค่า</button>
+    </div>
+  </div>
+
+  <div id="error-message"></div>
+  <div id="summary-section"></div>
+  <div id="table-container"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<script>
+let scheduleData = null;
+let shiftChart = null;
+let currentDay = 0;
+let isUpdating = false;
+
+// ฟังก์ชันจัดการเลือก/ยกเลิกกะ
+function toggleShift(shiftNum) {
+  const checkbox = document.getElementById('shift_enable_' + shiftNum);
+  checkbox.checked = !checkbox.checked;
+  handleShiftToggle(shiftNum);
+}
+
+function handleShiftToggle(shiftNum) {
+  const checkbox = document.getElementById('shift_enable_' + shiftNum);
+  const container = checkbox.closest('.shift-checkbox');
+  
+  if (checkbox.checked) {
+    container.classList.add('checked');
+  } else {
+    container.classList.remove('checked');
+  }
+  
+  // เช็คว่าต้องมีอย่างน้อย 1 กะ
+  const enabledShifts = getEnabledShifts();
+  if (enabledShifts.length === 0) {
+    checkbox.checked = true;
+    container.classList.add('checked');
+    showError('ต้องเลือกอย่างน้อย 1 กะ');
+    return;
+  }
+  
+  updateShiftInputsVisibility();
+  redistributeShiftPercentages();
+  updateChart();
+}
+
+function getEnabledShifts() {
+  const enabled = [];
+  for (let i = 1; i <= 8; i++) {
+    if (document.getElementById('shift_enable_' + i).checked) {
+      enabled.push(i);
+    }
+  }
+  return enabled;
+}
+
+function updateShiftInputsVisibility() {
+  const enabledShifts = getEnabledShifts();
+  
+  for (let i = 1; i <= 8; i++) {
+    const inputGroup = document.querySelector(`[data-shift="${i}"]`);
+    if (inputGroup) {
+      inputGroup.style.display = enabledShifts.includes(i) ? 'flex' : 'none';
+    }
+  }
+}
+
+function redistributeShiftPercentages() {
+  isUpdating = true;
+  
+  const enabledShifts = getEnabledShifts();
+  const equalPercent = Math.floor(100 / enabledShifts.length);
+  let remaining = 100 - (equalPercent * enabledShifts.length);
+  
+  for (let i = 1; i <= 8; i++) {
+    if (enabledShifts.includes(i)) {
+      let percent = equalPercent;
+      if (remaining > 0) {
+        percent++;
+        remaining--;
+      }
+      document.getElementById('shift_' + i).value = percent;
+      updateShiftFromPercent(i);
+    } else {
+      document.getElementById('shift_' + i).value = 0;
+      document.getElementById('shift_people_' + i).value = 0;
+    }
+  }
+  
+  isUpdating = false;
+  updateChart();
+}
+
+function updateShiftDisplay() {
+  const hours = parseInt(document.getElementById('work_hours').value);
+  
+  // อัพเดท label ของกะทั้งหมด
+  for (let i = 1; i <= 8; i++) {
+    const startHour = (i + 5);
+    const endHour = startHour + hours;
+    const label = document.querySelector(`[data-shift="${i}"] label`);
+    if (label) {
+      label.textContent = '⏰ ' + startHour.toString().padStart(2, '0') + ':00-' + endHour.toString().padStart(2, '0') + ':00';
+    }
+  }
+  
+  // อัพเดทกราฟ
+  updateChart();
+}
+
+function updateDaysOffInfo() {
+  // ฟังก์ชันนี้จะใช้ตอนสร้างตาราง
+  const daysOff = parseInt(document.getElementById('days_off').value);
+  console.log('Days off changed to:', daysOff);
+}
+
+// ฟังก์ชันหาจำนวนพนักงานสูงสุดในวันใดวันหนึ่ง
+function getMaxDayEmployees() {
+  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  let maxEmployees = 0;
+  
+  days.forEach(day => {
+    const people = parseInt(document.getElementById('people_' + day).value) || 0;
+    if (people > maxEmployees) {
+      maxEmployees = people;
+    }
+  });
+  
+  return maxEmployees > 0 ? maxEmployees : 1;
+}
+
+// ฟังก์ชันแปลงระหว่างคนกับ %
+function updateFromPeople(day) {
+  if (isUpdating) return;
+  isUpdating = true;
+  
+  const totalEmployees = parseInt(document.getElementById('num_employees').value) || 1;
+  const people = parseInt(document.getElementById('people_' + day).value) || 0;
+  const percent = Math.round((people / totalEmployees) * 100);
+  
+  document.getElementById('ratio_' + day).value = percent;
+  
+  // อัพเดทการคำนวณกะเพราะ max day อาจเปลี่ยน
+  for (let i = 1; i <= 8; i++) {
+    updateShiftFromPercent(i);
+  }
+  
+  isUpdating = false;
+}
+
+function updateFromPercent(day) {
+  if (isUpdating) return;
+  isUpdating = true;
+  
+  const totalEmployees = parseInt(document.getElementById('num_employees').value) || 1;
+  const percent = parseFloat(document.getElementById('ratio_' + day).value) || 0;
+  const people = Math.round((percent / 100) * totalEmployees);
+  
+  document.getElementById('people_' + day).value = people;
+  
+  // อัพเดทการคำนวณกะเพราะ max day อาจเปลี่ยน
+  for (let i = 1; i <= 8; i++) {
+    updateShiftFromPercent(i);
+  }
+  
+  isUpdating = false;
+}
+
+function updateShiftFromPeople(shift) {
+  if (isUpdating) return;
+  isUpdating = true;
+  
+  const maxDayEmployees = getMaxDayEmployees();
+  const people = parseInt(document.getElementById('shift_people_' + shift).value) || 0;
+  const percent = Math.round((people / maxDayEmployees) * 100);
+  
+  document.getElementById('shift_' + shift).value = percent;
+  updateChart();
+  isUpdating = false;
+}
+
+function updateShiftFromPercent(shift) {
+  if (isUpdating) return;
+  isUpdating = true;
+  
+  const maxDayEmployees = getMaxDayEmployees();
+  const percent = parseFloat(document.getElementById('shift_' + shift).value) || 0;
+  const people = Math.round((percent / 100) * maxDayEmployees);
+  
+  document.getElementById('shift_people_' + shift).value = people;
+  updateChart();
+  isUpdating = false;
+}
+
+function recalculateAll() {
+  if (isUpdating) return;
+  
+  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  days.forEach(day => updateFromPercent(day));
+  
+  // อัพเดทกะใหม่ตาม max day ที่เปลี่ยนไป
+  for (let i = 1; i <= 8; i++) {
+    updateShiftFromPercent(i);
+  }
+}
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const currentTheme = html.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  html.setAttribute('data-theme', newTheme);
+  document.querySelector('.switch').classList.toggle('active');
+  localStorage.setItem('theme', newTheme);
+  if (shiftChart) updateChart();
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const savedTheme = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', savedTheme);
+  if (savedTheme === 'dark') {
+    document.querySelector('.switch').classList.add('active');
+  }
+  
+  // Init checkbox states
+  for (let i = 1; i <= 8; i++) {
+    const checkbox = document.getElementById('shift_enable_' + i);
+    if (checkbox && checkbox.checked) {
+      checkbox.closest('.shift-checkbox').classList.add('checked');
+    }
+  }
+  
+  initChart();
+  updateChart();
+});
+
+function initChart() {
+  const ctx = document.getElementById('shiftChart').getContext('2d');
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const workHours = parseInt(document.getElementById('work_hours').value) || 9;
+  
+  const labels = [];
+  for (let i = 1; i <= 8; i++) {
+    const startHour = (i + 5);
+    const endHour = startHour + workHours;
+    labels.push(startHour.toString().padStart(2, '0') + ':00-' + endHour.toString().padStart(2, '0') + ':00');
+  }
+  
+  shiftChart = new Chart(ctx, {
+    type: 'pie',
+    data: {
+      labels: labels,
+      datasets: [{
+        data: [10, 15, 25, 25, 10, 5, 5, 5],
+        backgroundColor: [
+          '#FFC107', '#FFD54F', '#FFEB3B', '#FFF176',
+          '#FFE082', '#FFECB3', '#FFF9C4', '#FFFDE7'
+        ],
+        borderColor: isDark ? '#2d2d2d' : '#ffffff',
+        borderWidth: 2
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: true,
+      plugins: {
+        legend: {
+          display: false
+        },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              return context.label + ': ' + context.parsed + '%';
+            }
+          }
+        }
+      }
+    }
+  });
+}
+
+function updateChart() {
+  const data = [];
+  const labels = [];
+  const colors = [
+    '#FFC107', '#FFD54F', '#FFEB3B', '#FFF176',
+    '#FFE082', '#FFECB3', '#FFF9C4', '#FFFDE7'
+  ];
+  const enabledShifts = getEnabledShifts();
+  const workHours = parseInt(document.getElementById('work_hours').value) || 9;
+  
+  let total = 0;
+  
+  for (let shift of enabledShifts) {
+    const value = parseFloat(document.getElementById('shift_' + shift).value) || 0;
+    const startHour = (shift + 5);
+    const endHour = startHour + workHours;
+    
+    data.push(value);
+    labels.push(startHour.toString().padStart(2, '0') + ':00-' + endHour.toString().padStart(2, '0') + ':00');
+    total += value;
+  }
+  
+  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  
+  shiftChart.data.labels = labels;
+  shiftChart.data.datasets[0].data = data;
+  shiftChart.data.datasets[0].backgroundColor = colors.slice(0, enabledShifts.length);
+  shiftChart.data.datasets[0].borderColor = isDark ? '#2d2d2d' : '#ffffff';
+  shiftChart.update();
+  
+  // อัพเดทแสดง % รวม
+  const totalElement = document.getElementById('totalPercent');
+  totalElement.textContent = total + '%';
+  
+  // เปลี่ยนสีตาม status
+  if (total === 100) {
+    totalElement.style.color = '#27ae60';
+  } else if (total < 100) {
+    totalElement.style.color = '#e74c3c';
+  } else {
+    totalElement.style.color = '#f39c12';
+  }
+}
+
+function showError(message) {
+  const errorDiv = document.getElementById('error-message');
+  errorDiv.className = 'error';
+  errorDiv.innerHTML = '⚠️ ' + message;
+  setTimeout(() => errorDiv.innerHTML = '', 5000);
+}
+
+function validateInputs() {
+  const numEmployees = parseInt(document.getElementById('num_employees').value);
+  if (numEmployees < 1 || numEmployees > 100) {
+    showError('จำนวนพนักงานต้องอยู่ระหว่าง 1-100 คน');
+    return false;
+  }
+  
+  const enabledShifts = getEnabledShifts();
+  if (enabledShifts.length === 0) {
+    showError('กรุณาเลือกอย่างน้อย 1 กะ');
+    return false;
+  }
+  
+  let shiftTotal = 0;
+  for (let shift of enabledShifts) {
+    const ratio = parseInt(document.getElementById('shift_' + shift).value);
+    if (ratio < 0 || ratio > 100) {
+      showError('อัตราส่วนกะต้องอยู่ระหว่าง 0-100%');
+      return false;
+    }
+    shiftTotal += ratio;
+  }
+
+  if (shiftTotal !== 100) {
+    showError(`อัตราส่วนกะที่เลือกรวมกันต้องเท่ากับ 100% (ตอนนี้: ${shiftTotal}%)`);
+    return false;
+  }
+  
+  return true;
+}
+
+function generateSchedule() {
+  if (!validateInputs()) return;
+  
+  const numEmployees = parseInt(document.getElementById('num_employees').value);
+  const dayRatios = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    .map(day => parseFloat(document.getElementById('ratio_' + day).value) / 100);
+  
+  const shiftRatios = {};
+  const enabledShifts = getEnabledShifts();
+  
+  for (let shift of enabledShifts) {
+    shiftRatios[shift] = parseFloat(document.getElementById('shift_' + shift).value) / 100;
+  }
+  
+  scheduleData = createOptimizedSchedule(numEmployees, dayRatios, shiftRatios);
+  currentDay = 0;
+  displaySummary(scheduleData, numEmployees, dayRatios, shiftRatios);
+  displayScheduleTable(scheduleData, numEmployees);
+}
+
+function createOptimizedSchedule(numEmployees, dayRatios, shiftRatios) {
+  const schedule = {};
+  const employeeAssignedShift = {};
+  
+  // เอาเฉพาะกะที่เลือกไว้
+  const enabledShifts = getEnabledShifts();
+  const shifts = enabledShifts;
+  const shiftAssignments = [];
+  
+  // คำนวณจำนวนคนในแต่ละกะ (เฉพาะกะที่เลือก)
+  for (let shift of shifts) {
+    const count = Math.round(numEmployees * shiftRatios[shift]);
+    for (let i = 0; i < count; i++) {
+      shiftAssignments.push(shift);
+    }
+  }
+  
+  while (shiftAssignments.length < numEmployees) {
+    shiftAssignments.push(shifts[0]);
+  }
+  
+  while (shiftAssignments.length > numEmployees) {
+    shiftAssignments.pop();
+  }
+  
+  for (let i = shiftAssignments.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [shiftAssignments[i], shiftAssignments[j]] = [shiftAssignments[j], shiftAssignments[i]];
+  }
+  
+  for (let emp = 0; emp < numEmployees; emp++) {
+    employeeAssignedShift[emp] = shiftAssignments[emp];
+    schedule[emp] = {};
+  }
+  
+  // กำหนดวันหยุดตามที่เลือก
+  const daysOff = parseInt(document.getElementById('days_off').value) || 2;
+  
+  for (let emp = 0; emp < numEmployees; emp++) {
+    const offDays = [];
+    
+    while (offDays.length < daysOff) {
+      const day = Math.floor(Math.random() * 7);
+      if (!offDays.includes(day)) {
+        offDays.push(day);
+        schedule[emp][day] = '-';
+      }
+    }
+  }
+  
+  const dayIndices = [0, 1, 2, 3, 4, 5, 6];
+  
+  for (let day of dayIndices) {
+    const requiredEmployees = Math.round(numEmployees * dayRatios[day]);
+    
+    let availableEmployees = [];
+    for (let emp = 0; emp < numEmployees; emp++) {
+      if (schedule[emp][day] === undefined) {
+        availableEmployees.push(emp);
+      }
+    }
+    
+    availableEmployees.sort(() => Math.random() - 0.5);
+    
+    const assignCount = Math.min(requiredEmployees, availableEmployees.length);
+    
+    for (let i = 0; i < assignCount; i++) {
+      const emp = availableEmployees[i];
+      schedule[emp][day] = employeeAssignedShift[emp];
+    }
+  }
+  
+  // เติมวันที่ยังว่างทั้งหมด (ทั้ง 7 วัน)
+  for (let emp = 0; emp < numEmployees; emp++) {
+    for (let day = 0; day < 7; day++) {
+      if (schedule[emp][day] === undefined) {
+        schedule[emp][day] = employeeAssignedShift[emp];
+      }
+    }
+  }
+  
+  return schedule;
+}
+
+function shiftToTime(shift) {
+  if (typeof shift === 'number') {
+    const workHours = parseInt(document.getElementById('work_hours').value) || 9;
+    const startHour = (shift + 5) % 24;
+    const endHour = (startHour + workHours) % 24;
+    return startHour.toString().padStart(2, '0') + ':00-' + 
+           endHour.toString().padStart(2, '0') + ':00';
+  }
+  return shift;
+}
+
+function displaySummary(schedule, numEmployees, dayRatios, shiftRatios) {
+  const dayNames = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+  
+  const dayShiftCounts = Array(7).fill().map(() => ({}));
+  
+  for (let emp = 0; emp < numEmployees; emp++) {
+    for (let day = 0; day < 7; day++) {
+      const shift = schedule[emp][day];
+      if (shift && shift !== '-') {
+        if (!dayShiftCounts[day][shift]) {
+          dayShiftCounts[day][shift] = 0;
+        }
+        dayShiftCounts[day][shift]++;
+      }
+    }
+  }
+  
+  let html = '<div class="summary"><h3>📊 สรุปตารางงาน</h3>';
+  
+  html += '<div class="summary-tabs">';
+  dayNames.forEach((name, index) => {
+    const activeClass = index === currentDay ? 'active' : '';
+    html += `<button class="tab-button ${activeClass}" onclick="changeDay(${index})">${name}</button>`;
+  });
+  html += '</div>';
+  
+  const day = currentDay;
+  const requiredTotal = Math.round(numEmployees * dayRatios[day]);
+  let actualTotal = 0;
+  
+  for (let shift in dayShiftCounts[day]) {
+    actualTotal += dayShiftCounts[day][shift];
+  }
+  
+  html += '<div class="summary-section"><h4>วัน' + dayNames[day] + ' - พนักงานทั้งหมด: ' + actualTotal + '/' + requiredTotal + ' คน</h4>';
+  html += '<div class="summary-grid">';
+  
+  for (let shift = 1; shift <= 8; shift++) {
+    const actual = dayShiftCounts[day][shift] || 0;
+    const required = Math.round(requiredTotal * shiftRatios[shift]);
+    const actualPercent = requiredTotal > 0 ? Math.round((actual / requiredTotal) * 100) : 0;
+    const targetPercent = Math.round(shiftRatios[shift] * 100);
+    
+    let status = '✅';
+    if (Math.abs(actualPercent - targetPercent) > 5) {
+      status = actual < required ? '⚠️' : '⚡';
+    }
+    
+    html += `<div class="summary-item">
+      <strong>${shiftToTime(shift)}</strong>
+      ${status} ${actual} คน (${actualPercent}% / เป้า ${targetPercent}%)
+    </div>`;
+  }
+  
+  html += '</div></div>';
+  html += '</div>';
+  
+  document.getElementById('summary-section').innerHTML = html;
+}
+
+function changeDay(day) {
+  currentDay = day;
+  const numEmployees = parseInt(document.getElementById('num_employees').value);
+  const dayRatios = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun']
+    .map(d => parseFloat(document.getElementById('ratio_' + d).value) / 100);
+  
+  const shiftRatios = {};
+  const enabledShifts = getEnabledShifts();
+  
+  for (let shift of enabledShifts) {
+    shiftRatios[shift] = parseFloat(document.getElementById('shift_' + shift).value) / 100;
+  }
+  
+  displaySummary(scheduleData, numEmployees, dayRatios, shiftRatios);
+}
+
+function displayScheduleTable(schedule, numEmployees) {
+  const dayNames = ['จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์', 'อาทิตย์'];
+  
+  let html = '<div class="table-container"><table><thead><tr><th>พนักงาน</th>';
+  dayNames.forEach(day => html += `<th>${day}</th>`);
+  html += '</tr></thead><tbody>';
+  
+  for (let emp = 0; emp < numEmployees; emp++) {
+    html += `<tr><td class="employee-cell">พนักงานคนที่ ${emp + 1}</td>`;
+    for (let day = 0; day < 7; day++) {
+      const shift = schedule[emp][day];
+      const displayText = shiftToTime(shift);
+      const cellClass = shift === '-' ? 'off-day' : 'shift-cell';
+      html += `<td class="${cellClass}">${displayText}</td>`;
+    }
+    html += '</tr>';
+  }
+  
+  html += '</tbody></table></div>';
+  document.getElementById('table-container').innerHTML = html;
+}
+
+function exportToExcel() {
+  if (!scheduleData) {
+    showError('กรุณาสร้างตารางก่อนทำการ Export');
+    return;
+  }
+  
+  const table = document.querySelector('table');
+  const ws = XLSX.utils.table_to_sheet(table);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "ตารางเวร");
+  XLSX.writeFile(wb, "shift_schedule_" + new Date().toISOString().split('T')[0] + ".xlsx");
+}
+
+function resetInputs() {
+  isUpdating = true;
+  
+  document.getElementById('num_employees').value = 70;
+  document.getElementById('work_hours').value = 9;
+  document.getElementById('days_off').value = 2;
+  
+  // Reset shift checkboxes
+  for (let i = 1; i <= 8; i++) {
+    const checkbox = document.getElementById('shift_enable_' + i);
+    checkbox.checked = true;
+    checkbox.closest('.shift-checkbox').classList.add('checked');
+  }
+  
+  const defaultDayPeople = [56, 70, 70, 70, 70, 21, 21];
+  const defaultDayPercent = [80, 100, 100, 100, 100, 30, 30];
+  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  
+  days.forEach((day, i) => {
+    document.getElementById('people_' + day).value = defaultDayPeople[i];
+    document.getElementById('ratio_' + day).value = defaultDayPercent[i];
+  });
+  
+  const defaultShiftPeople = [7, 11, 18, 18, 7, 4, 4, 4];
+  const defaultShiftPercent = [10, 15, 25, 25, 10, 5, 5, 5];
+  
+  for (let i = 1; i <= 8; i++) {
+    document.getElementById('shift_people_' + i).value = defaultShiftPeople[i-1];
+    document.getElementById('shift_' + i).value = defaultShiftPercent[i-1];
+  }
+  
+  isUpdating = false;
+  updateShiftDisplay();
+  updateChart();
+  
+  document.getElementById('error-message').innerHTML = '';
+  document.getElementById('summary-section').innerHTML = '';
+  document.getElementById('table-container').innerHTML = '';
+  scheduleData = null;
+}
+
+function saveSettings() {
+  const settings = {
+    num_employees: document.getElementById('num_employees').value,
+    work_hours: document.getElementById('work_hours').value,
+    days_off: document.getElementById('days_off').value,
+    enabled_shifts: getEnabledShifts(),
+    days: {},
+    shifts: {}
+  };
+  
+  const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+  days.forEach(day => {
+    settings.days[day] = {
+      people: document.getElementById('people_' + day).value,
+      percent: document.getElementById('ratio_' + day).value
+    };
+  });
+  
+  for (let i = 1; i <= 8; i++) {
+    settings.shifts[i] = {
+      people: document.getElementById('shift_people_' + i).value,
+      percent: document.getElementById('shift_' + i).value,
+      enabled: document.getElementById('shift_enable_' + i).checked
+    };
+  }
+  
+  const settingsJSON = JSON.stringify(settings, null, 2);
+  const blob = new Blob([settingsJSON], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'shift_settings.json';
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+function loadSettings() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        isUpdating = true;
+        
+        const settings = JSON.parse(event.target.result);
+        document.getElementById('num_employees').value = settings.num_employees;
+        
+        if (settings.work_hours) {
+          document.getElementById('work_hours').value = settings.work_hours;
+        }
+        
+        if (settings.days_off) {
+          document.getElementById('days_off').value = settings.days_off;
+        }
+        
+        const days = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+        days.forEach(day => {
+          if (settings.days[day]) {
+            document.getElementById('people_' + day).value = settings.days[day].people;
+            document.getElementById('ratio_' + day).value = settings.days[day].percent;
+          }
+        });
+        
+        for (let i = 1; i <= 8; i++) {
+          if (settings.shifts[i]) {
+            document.getElementById('shift_people_' + i).value = settings.shifts[i].people;
+            document.getElementById('shift_' + i).value = settings.shifts[i].percent;
+            
+            const checkbox = document.getElementById('shift_enable_' + i);
+            checkbox.checked = settings.shifts[i].enabled !== false;
+            
+            if (checkbox.checked) {
+              checkbox.closest('.shift-checkbox').classList.add('checked');
+            } else {
+              checkbox.closest('.shift-checkbox').classList.remove('checked');
+            }
+          }
+        }
+        
+        isUpdating = false;
+        updateShiftInputsVisibility();
+        updateShiftDisplay();
+        updateChart();
+        alert('โหลดการตั้งค่าสำเร็จ! ✅');
+      } catch (error) {
+        isUpdating = false;
+        showError('ไม่สามารถโหลดไฟล์การตั้งค่าได้');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+</script>
+
+</body>
+</html>
